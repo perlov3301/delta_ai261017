@@ -37,12 +37,7 @@ refrain from attending the award ceremony to "avoid the controversy".
 She notably refused, stating that her "personal life" had no bearing 
 on her "scientific work" and received her second Nobel Prize.
 
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote set-url origin
-git push -u origin main
+beginning from
 https://github.com/perlov3301/delta260824.git
 
 
@@ -78,7 +73,9 @@ drkirkby@kirkbymicrowave.co.uk
 
 
 
-yt-dlp --download-sections "*0:00:37-0:00:44" --force-keyframes-at-cuts -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" --merge-output-format mp4 "YOUR_VIDEO_URL"
+yt-dlp --download-sections "*0:00:37-0:00:44" --force-keyframes-at-cuts -f 
+  "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" --merge-output-format mp4 
+  "YOUR_VIDEO_URL"
 git remote -v
 git config --get remote.origin.url
 1000MHz:40-j50 1160:62+j10 1350:100+j40
@@ -91,3 +88,35 @@ Z01[2]= 72.4 L01[2]= 65.6  ZO2[2]= 33.2 L02[2]= 62.6
 vswr=1.78
 Z01[1]= 23.4 L01[1]= 64.8  ZO2[1]= 43.9 L02[1]= 60.8
 Z01[2]= 55.3 L01[2]= 69.0  ZO2[2]= 31.0 L02[2]= 61.2
+
+echo "# delta_ai261017" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/perlov3301/delta_ai261017.git
+git push -u origin main
+
+for check: https://perlov3301.github.io/ai_261012check/
+from claud.ai:
+The big one: README and code don’t match. The README describes a genetic algorithm
+ and simultaneous passband/stopband optimization. The code has neither. 
+ There is only random search on max VSWR, and no GA or stopband logic anywhere. 
+ Since the README is written for HN, fix that first, either by editing the README or
+  by building the GA.
+
+Bugs:
+vswr1_db1.js returns Zin2.real as Zin_parallel.real. In my test the true parallel value was 
+15.76 Ω and it reported 18.46 Ω. VSWR isn’t affected, only the reported impedance.
+line_rl.js sampling never reaches the minimum and starts at min + 1% of the range. 
+A min of 20 gave 20.8 at best. min + Math.random()*(max-min) fixes it.
+In parallel_vswr.js, the catch doesn’t continue, so all[k] is undefined afterward. 
+A bad input should then throw a second, uncaught TypeError. I got this from reading the code, not from running it.
+Ranking uses rounded VSWR (fvswr), which is whole numbers above 24, so near-ties are coarse. 
+Rank on the raw value and round only for display.
+“Top 9” actually prints 10 (stopK = 9 with k === stopK).
+The “clear results” button does nothing: its id has a space, it has no </button>, and no handler exists.
+The page says to enter 10000 to remove the stub, but the code’s threshold is 1000.
+Small items:
+parallel_zin.js line 1 has a stray mm after class inputZ {. It’s harmless, but it’s a typo.
+The number inputs use value="frequence", which the browser blanks. placeholder is what you want.

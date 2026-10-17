@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>260726</title>
+    <title>rf transformer synthesis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="styles.css" rel="stylesheet" />
     <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" 
@@ -92,8 +92,8 @@
 <body>
     <div class="container">
         <h5 style="text-align: center;"> Feedback welcome:perlov1001@gmail.com </h5>
-        <h6 style="font-weight: 900; text-align: center;"> VSWR and Mismatch Loss in RF transformer for 
-            <code>random chosen</code> set of RF lines</h6>
+        <h6 style="font-weight: 900; text-align: center;"> VSWR RF transformer synthesizer by 
+            <code>random search</code> of best set of RF lines</h6>
         <div class="app_diagram_wrapper">
           <canvas id="structure1" width="800" height="260"></canvas>
         </div>
@@ -122,6 +122,7 @@
             <br>
           <button 
             id="button_f_n_table"
+            type="button"
             class="button-primary">parse Table of Load
           </button>
             <table id="mytable">
@@ -151,6 +152,7 @@
               </div>
               <div class="six columns inline_inputs">
                 <button id="table_stp" 
+                   type="button"
                    class="button-primary">parse table of rf lines</button>
               </div>
             </div>
@@ -215,7 +217,7 @@
             </fieldset>
           </div>
           <div class="two columns inline_inputs" style="flex-direction: column; content: c;">
-            <button id="clear results" 
+            <button id="clear_results" 
               style="margin-top: .1rem; margin-left: -1rem;"
               type="button">clear results
           </div>
@@ -241,6 +243,7 @@
     </div>
     <script type="module" src="parallel_vswr.js"></script>
     <script type="module" src="timenow.js"></script>
+    <script type="module" src="button_feedback.js"></script>
     <script type="module" src="mycanvas.js"></script>
     <!-- <script type="module" src="calculateVSWR.js"></script>
     <script type="module" src="parallel_zin.js"></script> -->

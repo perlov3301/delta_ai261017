@@ -45,7 +45,9 @@ document.addEventListener("readystatechange", () => {
     
     const result_vswr=  document.getElementById("result_vswr");
     result_vswr.textContent=`collection of results for best solutions from within ${k0}-times searches each \n`;
-    
+    const button_results= document.getElementById("clear_results");
+    button_results.addEventListener("click", ()=>{ result_vswr.textContent=`previous collection of results was cleared\n`;});
+
     const form= document.getElementById("vswrForm");
     const generatorR= document.getElementById("generatorR");
     
@@ -81,7 +83,7 @@ document.addEventListener("readystatechange", () => {
       inputIds_ZL2_real= table_ids.id_array_r;
       inputIds_ZL2_imag= table_ids.id_array_x;
     });//end of frequences table
-    
+ 
     const stp_tbody= document.getElementById("stpTableBody");
     const stp_n_input= document.getElementById("stp_n_input");
     stp_n_input.addEventListener("input", ()=> {
