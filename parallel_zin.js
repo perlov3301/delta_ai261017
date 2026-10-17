@@ -32,7 +32,7 @@ class inputZ { mm
         const Zin1_real = 0;
         let Zin1_imag=100000;
         if (Math.abs(tanBL1) < 1e-2) { tanBL1 = 0.01 ; } 
-        if (Z01>=1000) { Z01=1e9; }
+        if (Z01>=10000) { Z01=1e9; }
         Zin1_imag = Z01 * tanBL1;
         if (vconsole<1) {
           console.log(` Z01: ${Z01.toFixed(2)} Ω; tanBL1: ${tanBL1.toFixed(2)} `);

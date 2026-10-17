@@ -45,9 +45,7 @@ document.addEventListener("readystatechange", () => {
     
     const result_vswr=  document.getElementById("result_vswr");
     result_vswr.textContent=`collection of results for best solutions from within ${k0}-times searches each \n`;
-    const button_results= document.getElementById("clear_results");
-    button_results.addEventListener("click", ()=>{ result_vswr.textContent=`previous collection of results was cleared\n`;});
-
+    
     const form= document.getElementById("vswrForm");
     const generatorR= document.getElementById("generatorR");
     
@@ -83,7 +81,7 @@ document.addEventListener("readystatechange", () => {
       inputIds_ZL2_real= table_ids.id_array_r;
       inputIds_ZL2_imag= table_ids.id_array_x;
     });//end of frequences table
- 
+    
     const stp_tbody= document.getElementById("stpTableBody");
     const stp_n_input= document.getElementById("stp_n_input");
     stp_n_input.addEventListener("input", ()=> {
@@ -309,9 +307,28 @@ document.addEventListener("readystatechange", () => {
 
     } //end of updateResult
     
-    form.addEventListener("submit", (event) => {
+    // The search runs synchronously and freezes the page, so the button is
+    // switched to its "calculating…" state first and the browser gets one
+    // frame to draw it before the search starts.
+    const calculateButton= document.getElementById("recalculate");
+    const calculateLabel= calculateButton.textContent.trim();
+    let calculating= false;
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      updateResult();
+      if (calculating) { return; }
+      calculating= true;
+      calculateButton.disabled= true;
+      calculateButton.classList.add("is-calculating");
+      calculateButton.textContent= "calculating…";
+      await new Promise((resolve)=> requestAnimationFrame(()=> setTimeout(resolve, 0)));
+      try {
+        updateResult();
+      } finally {
+        calculateButton.textContent= calculateLabel;
+        calculateButton.classList.remove("is-calculating");
+        calculateButton.disabled= false;
+        calculating= false;
+      }
     });
 
 });
