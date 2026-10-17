@@ -71,7 +71,7 @@ class f1
             Zin1: { real: 0, imag: data.Zin1.imag},
             Zin2: { real: data.Zin2.real, imag: data.Zin2.imag },
             Zin_parallel: {
-              real: data.Zin2.real,
+              real: data.Zin_parallel.real,
               imag: data.Zin_parallel.imag,
             },
             gamma: vswrData.gamma,
