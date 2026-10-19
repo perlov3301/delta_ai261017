@@ -111,7 +111,7 @@
                 step="any" required>
             </div>
             <div class="six columns inline_inputs">
-              <label for="frequency_n" style="font-weight: bold;">number of frequencies</label>
+              <label for="frequency_n" style="font-weight: bold;">number of passband frequencies</label>
               <input type="number" 
                 value="2"
                 min="1" 
@@ -123,10 +123,10 @@
           <button 
             id="button_f_n_table"
             type="button"
-            class="button-primary">parse Table of Load
+            class="button-primary">parse Table of passband
           </button>
             <table id="mytable">
-              <caption>frequency and load impedance</caption>
+              <caption>passband (low VSWR wanted): frequency and load impedance</caption>
               <thead>
                 <tr >
                   <th scope="col">frequency(MHz)</th>
@@ -137,6 +137,59 @@
               <tbody id="frequencyTableBody">
               </tbody>
             </table>
+            <br>
+
+            <div class="row">
+              <div class="six columns inline_inputs">
+                <label for="stop_frequency_n" style="font-weight: bold;">
+                    number of stopband frequencies (0 = no stopband)</label>
+                <input type="number"
+                  value="0"
+                  min="0"
+                  id="stop_frequency_n"
+                  step="1" required >
+              </div>
+              <div class="six columns inline_inputs">
+                <button
+                  id="button_stop_table"
+                  type="button"
+                  class="button-primary">parse Table of stopband
+                </button>
+              </div>
+            </div>
+            <table id="stopTable">
+              <caption>stopband (high VSWR wanted): frequency and load impedance</caption>
+              <thead>
+                <tr >
+                  <th scope="col">frequency(MHz)</th>
+                  <th scope="col">Load real R(Ω)</th>
+                  <th scope="col">Load imag X(Ω)</th>
+                </tr>
+              </thead>
+              <tbody id="stopTableBody">
+              </tbody>
+            </table>
+            <br>
+            <div class="row">
+              <div class="six columns inline_inputs">
+                <label for="stop_vswr_target" style="font-weight: bold;">
+                    wanted VSWR in stopband (at least)</label>
+                <input type="number"
+                  value="10"
+                  min="1.01"
+                  id="stop_vswr_target"
+                  step="any" required >
+              </div>
+              <div class="six columns inline_inputs">
+                <label for="stop_weight" style="font-weight: bold;">
+                    stopband weight (0 = ignore stopband)</label>
+                <input type="number"
+                  value="3"
+                  min="0"
+                  id="stop_weight"
+                  step="any" required >
+              </div>
+            </div>
             <br>
             
             

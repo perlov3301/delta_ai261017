@@ -5,6 +5,7 @@ import { format1 } from './format1.js';
 import { table_stp_n } from './table_stp_n.js';
 import { LineLR } from './line_rl.js';
 import { Ids } from './ids_stp_n.js';
+import { limitStopVswr, rejectionDb, candidateCost } from './cost.js';
 document.addEventListener("readystatechange", () => {
     console.log("document.readyState:", document.readyState);
    
@@ -81,7 +82,81 @@ document.addEventListener("readystatechange", () => {
       inputIds_ZL2_real= table_ids.id_array_r;
       inputIds_ZL2_imag= table_ids.id_array_x;
     });//end of frequences table
-    
+
+// ---- stopband: frequencies that must be rejected (high VSWR wanted) ----
+// Optional. With 0 stopband frequencies the program works as before.
+    let inputIds_sf= [];
+    let inputIds_sr= [];
+    let inputIds_sx= [];
+    const stop_tbody= document.getElementById("stopTableBody");
+    const stop_n_input= document.getElementById("stop_frequency_n");
+    const stop_target_input= document.getElementById("stop_vswr_target");
+    const stop_weight_input= document.getElementById("stop_weight");
+    function forgetStopTable() {
+      stop_tbody.replaceChildren("");
+      inputIds_sf= [];
+      inputIds_sr= [];
+      inputIds_sx= [];
+    }
+    stop_n_input.addEventListener("input", forgetStopTable);
+    document.getElementById("button_stop_table").addEventListener("click", ()=> {
+      forgetStopTable();
+      const n= parseInt(stop_n_input.value, 10);
+      if (!Number.isInteger(n) || n<1) { return; } // 0: no stopband
+      const stop_ids= table_f_n.addRows(
+          "stopTableBody",
+          n,
+          "stop_frequency",
+          "stop_load_real", "stop_load_imag");
+      inputIds_sf= stop_ids.id_array_f;
+      inputIds_sr= stop_ids.id_array_r;
+      inputIds_sx= stop_ids.id_array_x;
+    });
+    /**
+     * Reads the stopband table and its two settings from the page.
+     * @returns {{freq:number[], real:number[], imag:number[], target:number, weight:number}}
+     *          freq is empty when no stopband is wanted
+     * @throws {Error} with a message for the person when the input is unusable
+     */
+    function readStopband() {
+      const raw= parseInt(stop_n_input.value, 10);
+      const wanted= Number.isNaN(raw) ? 0 : raw;
+      if (wanted<0) {
+        throw new Error("number of stopband frequencies must be 0 or more.");
+      }
+      const stop= { freq: [], real: [], imag: [], target: 10, weight: 0 };
+      if (wanted===0) { return stop; }
+      if (inputIds_sf.length!==wanted) {
+        throw new Error("stopband: press 'parse Table of stopband' first.");
+      }
+      for (let i=0; i<wanted; i++) {
+        const f= parseFloat(document.getElementById(inputIds_sf[i]).value);
+        const r= parseFloat(document.getElementById(inputIds_sr[i]).value);
+        const x= parseFloat(document.getElementById(inputIds_sx[i]).value);
+        if (!Number.isFinite(f) || !Number.isFinite(r) || !Number.isFinite(x)) {
+          throw new Error(`stopband: row ${i+1} must be filled in with numbers.`);
+        }
+        stop.freq[i]= f;
+        stop.real[i]= r;
+        stop.imag[i]= x;
+      }
+      stop.target= parseFloat(stop_target_input.value);
+      if (!(stop.target>1)) {
+        throw new Error("wanted VSWR in stopband must be a number above 1.");
+      }
+      stop.weight= parseFloat(stop_weight_input.value);
+      if (!(stop.weight>=0)) {
+        throw new Error("stopband weight must be a number, 0 or more.");
+      }
+      return stop;
+    }
+    // " stopband: ..." part of a result line; empty when there is no stopband
+    function bandText(item) {
+      if (item.stop===null || item.stop===undefined) { return ""; }
+      return `  stopband: min vswr=${format1.fvswr(item.stop)}`
+           + ` (${rejectionDb(item.stop).toFixed(1)} dB rejected)`;
+    }
+
     const stp_tbody= document.getElementById("stpTableBody");
     const stp_n_input= document.getElementById("stp_n_input");
     stp_n_input.addEventListener("input", ()=> {
@@ -139,8 +214,15 @@ document.addEventListener("readystatechange", () => {
         explanationArea.value= error.message;
         return;
       }
+      let stop;
+      try {
+        stop= readStopband();
+      } catch (error) {
+        explanationArea.value= error.message;
+        return;
+      }
       const Z0=  parseFloat(generatorR.value);
-      console.log("updateResult; Z0:", Z0, " f_n:", f_n);
+      console.log("updateResult; Z0:", Z0, " f_n:", f_n, " stopband frequencies:", stop.freq.length);
       let frequency_array= [];
       let ZL2_real_array= [];
       let ZL2_imag_array= [];
@@ -170,7 +252,9 @@ document.addEventListener("readystatechange", () => {
       explanationArea.value= `top 9 sets of lines from ${k0} sets of lines after last calculation \n`;
       let all=[];
       let targetArr = [];
-      for (let k=0; k<k0; k++) {   
+      let failed= 0;       // number of sets of lines skipped because of an error
+      let firstError= "";  // message of the first such error
+      for (let k=0; k<k0; k++) {
         vconsole=vconsole+1;
         if (vconsole<1) {
           console.log("updateResult; k=", k, " of ", k0," vconsole=", vconsole);
@@ -190,6 +274,7 @@ document.addEventListener("readystatechange", () => {
         let db_array= [];
         let g_array= [];
         let vswr_max=1;
+        let vswr_raw_array= []; // passband VSWR without rounding, for the cost
 
         for (let j=0; j<stp_n;j++) {
           const {Z01, Z02, length1, length2} = LineLR
@@ -225,6 +310,7 @@ document.addEventListener("readystatechange", () => {
               if (!vswrData || vswrData.vswr === Infinity || vswrData.vswr<1.0) {
                 throw new Error("updateResult;Invalid vswrData returned from vswr1_db1.");
               }
+              vswr_raw_array[i]= vswrData.vswr;
               vswr_array[i]=  format1.fvswr(vswrData.vswr);
               db_array[i]=    format1.fdb(vswrData.db);
               g_array[i]=     format1.fg(vswrData.gamma);
@@ -238,42 +324,70 @@ document.addEventListener("readystatechange", () => {
             } //end of for loop over f_n
 
             vswr_max= Math.max(...vswr_array);
-           
+
+            // stopband: the same set of lines is judged at the stopband
+            // frequencies too (there a HIGH vswr is the wanted result)
+            const stop_vswr_array= [];
+            for (let i=0; i< stop.freq.length; i++) {
+              const stopData= f1.vswr1_db1(
+                  Z0,
+                  stop.freq[i], stop.real[i], stop.imag[i],
+                  vf ,
+                  stp_n,
+                  Z01_array, Z02_array, length1_array, length2_array,
+                  vconsole
+              );
+              if (!stopData) {
+                throw new Error("updateResult;Invalid stopband data returned from vswr1_db1.");
+              }
+              stop_vswr_array[i]= limitStopVswr(stopData.vswr);
+            }
+            const score= candidateCost(
+                vswr_raw_array, stop_vswr_array, stop.target, stop.weight);
+
             vswr_k[k]=vswr_max;
             z01_k[k]= Z01_array;
             z02_k[k]= Z02_array;
             l01_k[k]= length1_array;
             l02_k[k]= length2_array;
 
-            object1.vswr=vswr_max;
-            object1.z01= Z01_array; 
+            object1.vswr=vswr_max;     // worst passband vswr
+            object1.stop= score.stopMin; // lowest stopband vswr, null without stopband
+            object1.cost= score.cost;  // what the sorting is based on
+            object1.z01= Z01_array;
             object1.z02= Z02_array;
             object1.l01=length1_array;
             object1.l02=length2_array;
             all.push(object1);
-            // console.log("updateResult; k=", k, " object1.vswr:", object1.vswr, " all[k].vswr:", all[k].vswr);
+            // a set of lines goes into the sorted list only after it was
+            // calculated without error (all[k] is not reliable: a skipped
+            // set leaves no entry in all, so the indexes shift)
+            insertItem(targetArr, object1, "cost");
         } //end of try
         catch (error) {
-          result_vswr.textContent = "parallel_vswr;Error of calculations .";
-          explanationArea.value += error.message;
+          // skip this set of lines and go on with the next one
+          failed++;
+          if (firstError==="") { firstError= error.message; }
+          continue;
         }// end of catch
         
-        if (k==0) {
-          targetArr.push(all[0]);
-        }
-        else { 
-          insertItem(targetArr, all[k], "vswr");
-        }
-        
-         
       } //end of k
-    
+
+      if (targetArr.length===0) { // every set of lines failed: nothing to show
+        result_vswr.textContent+= `parallel_vswr;Error of calculations .\n`;
+        explanationArea.value+= `${firstError}\n`;
+        return;
+      }
+      if (failed>0) {
+        explanationArea.value+= `${failed} of ${k0} sets of lines were skipped because of an error: ${firstError}\n`;
+      }
+
       k=0;
       const stopK = 9;
       targetArr.some((array_all, k) => {
         const vswr_p= document.createElement("p");
-        explanationArea.value+= `---vswr=${array_all.vswr}---\n`;
-         
+        explanationArea.value+= `---vswr=${array_all.vswr}${bandText(array_all)}---\n`;
+
         vswr_p.textContent= `---vswr=${array_all.vswr}---`;
         vswr_p.style.lineHeight=".1rem";
         array_all.z01.forEach((num,n)=> {
@@ -290,7 +404,7 @@ document.addEventListener("readystatechange", () => {
       const spaces = " ".repeat(3);
       result_vswr.textContent+= `\n`;
       const vswr_p=document.createElement("p");
-      vswr_p.textContent= `vswr=${targetArr[0].vswr}\n`;
+      vswr_p.textContent= `vswr=${targetArr[0].vswr}${bandText(targetArr[0])}\n`;
       vswr_p.style.lineHeight=".1rem";
       result_vswr.appendChild(vswr_p);
       // result_vswr.textContent+= `vswr=${all[0].vswr}\n`;
