@@ -73,9 +73,10 @@ drkirkby@kirkbymicrowave.co.uk
 
 
 
-yt-dlp --download-sections "*0:00:37-0:00:44" --force-keyframes-at-cuts -f 
-  "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" --merge-output-format mp4 
-  "YOUR_VIDEO_URL"
+yt-dlp --download-sections "*0:00:37-0:00:44" --force-keyframes-at-cuts -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" --merge-output-format mp4  "YOUR_VIDEO_URL"
+yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" "VIDEO_URL"
+yt-dlp -f "bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=480]+bestaudio/best[ext=mp4]" "YOUR_VIDEO_URL"
+
 git remote -v
 git config --get remote.origin.url
 1000MHz:40-j50 1160:62+j10 1350:100+j40
@@ -89,9 +90,7 @@ vswr=1.78
 Z01[1]= 23.4 L01[1]= 64.8  ZO2[1]= 43.9 L02[1]= 60.8
 Z01[2]= 55.3 L01[2]= 69.0  ZO2[2]= 31.0 L02[2]= 61.2
 
-echo "# delta_ai261017" >> README.md
-git init
-git add README.md
+git add .
 git commit -m "first commit"
 git branch -M main
 git remote add origin https://github.com/perlov3301/delta_ai261017.git
@@ -120,3 +119,7 @@ The page says to enter 10000 to remove the stub, but the code’s threshold is 1
 Small items:
 parallel_zin.js line 1 has a stray mm after class inputZ {. It’s harmless, but it’s a typo.
 The number inputs use value="frequence", which the browser blanks. placeholder is what you want.
+
+weighted passband/stopband cost.” The stopband is a weighted penalty 
+ (worst passband VSWR + weight × shortfall),
+ so “optimizes both simultaneously” is fair if you describe it that way.

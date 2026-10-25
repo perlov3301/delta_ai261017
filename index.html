@@ -91,7 +91,7 @@
 </head>
 <body>
     <div class="container">
-        <h5 style="text-align: center;"> Feedback welcome:perlov1001@gmail.com </h5>
+        <h6 style="text-align: center;font-weight: bold;"> Feedback welcome:perlov1001@gmail.com subject:delta_ai261017</h6>
         <h6 style="font-weight: 900; text-align: center;"> VSWR RF transformer synthesizer by 
             <code>random search</code> of best set of RF lines</h6>
         <div class="app_diagram_wrapper">
@@ -111,20 +111,38 @@
                 step="any" required>
             </div>
             <div class="six columns inline_inputs">
-              <label for="frequency_n" style="font-weight: bold;">number of passband frequencies</label>
+              <!-- <label for="frequency_n" style="font-weight: bold;">number of passband frequencies</label>
               <input type="number" 
                 value="2"
                 min="1" 
                 id="frequency_n" 
-                step="1" required >
+                step="1" required > -->
             </div>
           </div>
             <br>
-          <button 
+          <!-- <button 
             id="button_f_n_table"
             type="button"
             class="button-primary">parse Table of passband
-          </button>
+          </button> -->
+          <div class="row">
+            <div class="six columns inline_inputs">
+              <label for="frequency_n" style="font-weight: bold;">
+                   number of passband frequencies</label>
+              <input type="number" 
+                value="1"
+                min="1" 
+                id="frequency_n" 
+                step="1" required >
+            </div>
+            <div class="six columns inline_inputs">
+              <button 
+                id="button_f_n_table"
+                type="button"
+                class="button-primary">parse Table of passband
+              </button>
+            </div>
+          </div>
             <table id="mytable">
               <caption>passband (low VSWR wanted): frequency and load impedance</caption>
               <thead>

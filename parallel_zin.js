@@ -31,7 +31,8 @@ class inputZ { mm
         let tanBL1 = Math.tan(electricalLength1);
         const Zin1_real = 0;
         let Zin1_imag=100000;
-        if (Math.abs(tanBL1) < 1e-2) { tanBL1 = 0.01 ; } 
+        // if (Math.abs(tanBL1) < 1e-3) { tanBL1 = 0.001 ; } 
+        if (Math.abs(tanBL1) < 1e-3) { tanBL1 = (tanBL1 < 0 ? -1 : 1) * 1e-3; }
         if (Z01>=10000) { Z01=1e9; }
         Zin1_imag = Z01 * tanBL1;
         if (vconsole<1) {
@@ -94,3 +95,6 @@ if (vconsole<1) {
   }
 }
 export { inputZ };
+// parallel_zin.js, |tan| < 0.01 is forced to +0.01. A stub with tan = −0.005 
+// gave Zin1 = +0.8 Ω instead of −0.4 Ω. The window is narrow, 
+// but keep the sign: tanBL1 = (tanBL1 < 0 ? -1 : 1) * 0.01
