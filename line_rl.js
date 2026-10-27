@@ -41,10 +41,10 @@ class LineLR {
      //   Z02= (Math.random() * (d_n - 1) + 1)*d_2r+Z02;
      //   length1= (Math.random() * (d_n - 1) + 1)*d_1l+length1;
      //   length2= (Math.random() * (d_n - 1) + 1)*d_2l+length2;
-       Z01= getrandom(Z01max, Z01);
-       Z02= getrandom(Z02max, Z02);
-       length1= getrandom(length1max, length1);
-       length2= getrandom(length2max, length2);
+       Z01=     this.getrandom(Z01max, Z01);
+       Z02=     this.getrandom(Z02max, Z02);
+       length1= this.getrandom(length1max, length1);
+       length2= this.getrandom(length2max, length2);
        if (vconsole<1) { 
           console.log("line_rljs; Z01:", format1.fzin_r(Z01), " L1:", format1.f_l(length1));
           console.log("line_rljs; Z02:", format1.fzin_r(Z02), " L2:", format1.f_l(length2));
