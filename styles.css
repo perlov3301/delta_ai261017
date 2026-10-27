@@ -49,7 +49,24 @@ button {
   transition: transform 80ms ease, box-shadow 120ms ease,
               background-color 120ms ease, border-color 120ms ease;
 }
-/* mouse over */
+/* mouse over: white text.
+skeleton.css would turn the text dark (#333) here. */
+button:not(:disabled):hover,
+button.button-primary:not(:disabled):hover {
+  color: white;
+}
+/* After a click the button keeps keyboard focus, and skeleton.css then
+shows its "focus" colours. Once the mouse has left, the button must look
+as before the click, so the default colours of skeleton.css are restored. */
+button:not(.button-primary):not(:disabled):focus:not(:hover):not(:active) {
+  color: #555;
+  border-color: #bbb;
+}
+button.button-primary:not(:disabled):focus:not(:hover):not(:active) {
+  color: #FFF;
+  background-color: #33C3F0;
+  border-color: #33C3F0;
+}
 button:not(:disabled):hover,
 button.button-primary:not(:disabled):hover {
   background-color: rgb(30, 30, 140);
@@ -65,6 +82,7 @@ button.button-primary:not(:disabled):focus-visible {
 /* while the mouse button is held down: looks pressed in */
 button:not(:disabled):active,
 button.button-primary:not(:disabled):active {
+  color: white;
   background-color: rgb(3, 3, 94);
   border-color: rgb(119, 119, 239);
   transform: translateY(2px) scale(0.96);
