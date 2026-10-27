@@ -1,5 +1,6 @@
 import { format1 } from './format1.js';
 class LineLR {
+     //min + Math.random()*(max-min)
    getrandom(max) {
         return Math.random() * (max - 1) + 1;
    }

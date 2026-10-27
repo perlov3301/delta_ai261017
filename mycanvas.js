@@ -56,7 +56,7 @@ document.addEventListener("readystatechange",()=> {
     const canvas1= document.getElementById("structure1");
     const ctx1= canvas1.getContext("2d");
     function renderDraw1() {// clear and draw
-        ctx1.clearRect(0,0, canvas1.widht, canvas1.height);
+        ctx1.clearRect(0,0, canvas1.width, canvas1.height);
         ctx1.translate(0,-360);
     // text
         ctx1.font="bold 19px arial";
