@@ -59,6 +59,11 @@ document.addEventListener("readystatechange", () => {
       explanationArea.value = `time: ${timenow()}\n`;
 
     });
+    document.getElementById("clear_results").addEventListener("click", ()=> {
+      result_vswr.replaceChildren();
+      result_vswr.textContent= `collection: for each click 'calculate' is added best solution after ${k0}-times search \n`;
+      targets0.length= 0;
+    });
     mytable.addEventListener('input', ()=> {
       result_vswr.textContent=`collection of best solution from within ${k0}-times searches each\n`;
     });
