@@ -1,6 +1,10 @@
 import { format1 } from './format1.js';
 class LineLR {
-     // Math.random()*(max-min)+min 
+     constructor() {
+       this.getrandom = this.getrandom.bind(this);
+     }
+// define the method to get a random number between min and max
+// Math.random()*(max-min)+min 
    getrandom(max,min) {
         return Math.random() * (max - min) + min;
    }
@@ -37,14 +41,14 @@ class LineLR {
        d_2r= (Z02max-Z02)/d_n;
        d_2l= (length2max-length2)/d_n;
      //Math.random()*(max-min)+min 
-     //   Z01= (Math.random() * (d_n - 1) + 1)*d_1r+Z01;
-     //   Z02= (Math.random() * (d_n - 1) + 1)*d_2r+Z02;
-     //   length1= (Math.random() * (d_n - 1) + 1)*d_1l+length1;
-     //   length2= (Math.random() * (d_n - 1) + 1)*d_2l+length2;
-       Z01=     this.getrandom(Z01max, Z01);
-       Z02=     this.getrandom(Z02max, Z02);
-       length1= this.getrandom(length1max, length1);
-       length2= this.getrandom(length2max, length2);
+     // Z01=     this.getrandom(Z01max, Z01);
+     // Z02=     this.getrandom(Z02max, Z02);
+     // length1= this.getrandom(length1max, length1);
+     // length2= this.getrandom(length2max, length2);
+       Z01=     Math.random() * (Z01max-Z01) + Z01;
+       Z02=     Math.random() * (Z02max-Z02) + Z02;
+       length1= Math.random()*(length1max-length1)+length1 ;
+       length2= Math.random()*(length2max-length2)+length2 ;
        if (vconsole<1) { 
           console.log("line_rljs; Z01:", format1.fzin_r(Z01), " L1:", format1.f_l(length1));
           console.log("line_rljs; Z02:", format1.fzin_r(Z02), " L2:", format1.f_l(length2));
