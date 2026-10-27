@@ -9,11 +9,11 @@ class LineLR {
         return Math.random() * (max - min) + min;
    }
    static line1_lr (id_rmin, id_rmax, id_lmin, id_lmax,i,vconsole) {
-        const d_n=100;
-        let d_1r=0;
-        let d_2r=0;
-        let d_1l=0;
-        let d_2l=0;
+     //    const d_n=100;
+     //    let d_1r=0;
+     //    let d_2r=0;
+     //    let d_1l=0;
+     //    let d_2l=0;
     
         const line1_R= document.getElementById(id_rmin[i][0]);
         const line1_Rmax= document.getElementById(id_rmax[i][0]);
@@ -36,10 +36,10 @@ class LineLR {
             Number.isNaN(length1) || Number.isNaN(length2) ) {
             throw new Error( "line_rljs;enter valid numeric values for all line inputs.");
        }
-       d_1r= (Z01max-Z01)/d_n;
-       d_1l= (length1max-length1)/d_n;
-       d_2r= (Z02max-Z02)/d_n;
-       d_2l= (length2max-length2)/d_n;
+     //   d_1r= (Z01max-Z01)/d_n;
+     //   d_1l= (length1max-length1)/d_n;
+     //   d_2r= (Z02max-Z02)/d_n;
+     //   d_2l= (length2max-length2)/d_n;
      //Math.random()*(max-min)+min 
      // Z01=     this.getrandom(Z01max, Z01);
      // Z02=     this.getrandom(Z02max, Z02);
