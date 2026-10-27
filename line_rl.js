@@ -1,20 +1,15 @@
 import { format1 } from './format1.js';
 class LineLR {
      constructor() {
-       this.getrandom = this.getrandom.bind(this);
+     //   this.getrandom = this.getrandom.bind(this);
      }
 // define the method to get a random number between min and max
 // Math.random()*(max-min)+min 
-   getrandom(max,min) {
+   static getrandom(max,min) {
         return Math.random() * (max - min) + min;
    }
    static line1_lr (id_rmin, id_rmax, id_lmin, id_lmax,i,vconsole) {
-     //    const d_n=100;
-     //    let d_1r=0;
-     //    let d_2r=0;
-     //    let d_1l=0;
-     //    let d_2l=0;
-    
+
         const line1_R= document.getElementById(id_rmin[i][0]);
         const line1_Rmax= document.getElementById(id_rmax[i][0]);
         const line1_L= document.getElementById(id_lmin[i][0]);
@@ -36,19 +31,16 @@ class LineLR {
             Number.isNaN(length1) || Number.isNaN(length2) ) {
             throw new Error( "line_rljs;enter valid numeric values for all line inputs.");
        }
-     //   d_1r= (Z01max-Z01)/d_n;
-     //   d_1l= (length1max-length1)/d_n;
-     //   d_2r= (Z02max-Z02)/d_n;
-     //   d_2l= (length2max-length2)/d_n;
+  
      //Math.random()*(max-min)+min 
-     // Z01=     this.getrandom(Z01max, Z01);
-     // Z02=     this.getrandom(Z02max, Z02);
-     // length1= this.getrandom(length1max, length1);
-     // length2= this.getrandom(length2max, length2);
-       Z01=     Math.random() * (Z01max-Z01) + Z01;
-       Z02=     Math.random() * (Z02max-Z02) + Z02;
-       length1= Math.random()*(length1max-length1)+length1 ;
-       length2= Math.random()*(length2max-length2)+length2 ;
+     Z01=     LineLR.getrandom(Z01max, Z01);
+     Z02=     LineLR.getrandom(Z02max, Z02);
+     length1= LineLR.getrandom(length1max, length1);
+     length2= LineLR.getrandom(length2max, length2);
+     //   Z01=     Math.random() * (Z01max-Z01) + Z01;
+     //   Z02=     Math.random() * (Z02max-Z02) + Z02;
+     //   length1= Math.random()*(length1max-length1)+length1 ;
+     //   length2= Math.random()*(length2max-length2)+length2 ;
        if (vconsole<1) { 
           console.log("line_rljs; Z01:", format1.fzin_r(Z01), " L1:", format1.f_l(length1));
           console.log("line_rljs; Z02:", format1.fzin_r(Z02), " L2:", format1.f_l(length2));
