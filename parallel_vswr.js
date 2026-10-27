@@ -45,7 +45,7 @@ document.addEventListener("readystatechange", () => {
  
     
     const result_vswr=  document.getElementById("result_vswr");
-    result_vswr.textContent=`collection of results for best solutions from within ${k0}-times searches each \n`;
+    result_vswr.textContent=`collection of results for best solutions \n`;
     
     const form= document.getElementById("vswrForm");
     const generatorR= document.getElementById("generatorR");
@@ -55,17 +55,19 @@ document.addEventListener("readystatechange", () => {
     const frequency_n_input= document.getElementById("frequency_n");
     frequency_n_input.addEventListener("input", ()=>{
       tbody.replaceChildren(""); 
-      result_vswr.textContent=`collection of best solution from within ${k0}-times searches each  \n`;
+      result_vswr.textContent=`collection of best solution   \n`;
       explanationArea.value = `time: ${timenow()}\n`;
-
+      targets0.length= 0;
     });
     document.getElementById("clear_results").addEventListener("click", ()=> {
       result_vswr.replaceChildren();
-      result_vswr.textContent= `collection: for each click 'calculate' is added best solution after ${k0}-times search \n`;
+      result_vswr.textContent= `collection: for each click 'calculate' is added best solution \n`;
       targets0.length= 0;
+      explanationArea.value= "";
     });
     mytable.addEventListener('input', ()=> {
-      result_vswr.textContent=`collection of best solution from within ${k0}-times searches each\n`;
+      result_vswr.textContent=`collection of best solution \n`;
+      targets0.length= 0; // the collection in results was dropped, so are its ranges
     });
     
     let f_n=1; // number of f
@@ -162,6 +164,30 @@ document.addEventListener("readystatechange", () => {
            + ` (${rejectionDb(item.stop).toFixed(1)} dB rejected)`;
     }
 
+    /**
+     * Range (min ... max) of every rf line parameter over the collected best
+     * solutions, one block per section. Only solutions with the same number
+     * of sections as the newest one are used.
+     * @param {Array} items  collected best solutions (z01, l01, z02, l02 arrays)
+     * @returns {string} text for the "lines parameters" textarea
+     */
+    function rangesText(items) {
+      if (items.length===0) { return ""; }
+      const sections= items[items.length-1].z01.length;
+      const used= items.filter((it)=> it.z01.length===sections);
+      const range= (key, n)=> {
+        const values= used.map((it)=> it[key][n]);
+        return `${Math.min(...values).toFixed(1)} ... ${Math.max(...values).toFixed(1)}`;
+      };
+      let text= `range of parameters from ${used.length} best solution(s) in results\n`;
+      for (let n=0; n<sections; n++) {
+        text+= `section ${n+1}:\n`;
+        text+= `  Z01 (Ω): ${range("z01", n)}   L01 (mm): ${range("l01", n)}\n`;
+        text+= `  Z02 (Ω): ${range("z02", n)}   L02 (mm): ${range("l02", n)}\n`;
+      }
+      return text;
+    }
+
     const stp_tbody= document.getElementById("stpTableBody");
     const stp_n_input= document.getElementById("stp_n_input");
     stp_n_input.addEventListener("input", ()=> {
@@ -208,7 +234,7 @@ document.addEventListener("readystatechange", () => {
           +value.toFixed(2): "NaN";
     }
     
-    result_vswr.textContent= `collection: for each click 'calculate' is added best solution after ${k0}-times search \n`;
+    result_vswr.textContent= `collection: for each click 'calculate' is added best solution \n`;
     
     function updateResult() 
     {
@@ -254,7 +280,7 @@ document.addEventListener("readystatechange", () => {
       const { id_rmin, id_rmax, id_lmin, id_lmax}= Ids.ids_stp_n(stp_n);
       
       let k=800;
-      explanationArea.value= `top 9 sets of lines from ${k0} sets of lines after last calculation \n`;
+      explanationArea.value= "";
       let all=[];
       let targetArr = [];
       let failed= 0;       // number of sets of lines skipped because of an error
@@ -387,25 +413,12 @@ document.addEventListener("readystatechange", () => {
         explanationArea.value+= `${failed} of ${k0} sets of lines were skipped because of an error: ${firstError}\n`;
       }
 
-      k=0;
-      const stopK = 9;
-      targetArr.some((array_all, k) => {
-        const vswr_p= document.createElement("p");
-        explanationArea.value+= `---vswr=${array_all.vswr}${bandText(array_all)}---\n`;
+      // the best solution of this click joins the collection shown in
+      // "results"; the textarea shows the range of parameters of the whole
+      // collection
+      targets0.push(targetArr[0]);
+      explanationArea.value+= rangesText(targets0);
 
-        vswr_p.textContent= `---vswr=${array_all.vswr}---`;
-        vswr_p.style.lineHeight=".1rem";
-        array_all.z01.forEach((num,n)=> {
-          let text_p= `Z01[${n+1}]= ${array_all.z01[n].toFixed(1)} L01[${n+1}]= ${array_all.l01[n].toFixed(1)} `;
-            text_p+= ` ZO2[${n+1}]= ${array_all.z02[n].toFixed(1)} L02[${n+1}]= ${array_all.l02[n].toFixed(1)}`;
-          explanationArea.value+= `${text_p}\n`; 
-          const line_p= document.createElement("p");
-          line_p.textContent= text_p;
-          line_p.style.lineHeight= ".01"; // Adjust the line height as needed
-        });
-        return k === stopK; // Stop the loop when k reaches stopK
-      });// end of some
-     
       const spaces = " ".repeat(3);
       result_vswr.textContent+= `\n`;
       const vswr_p=document.createElement("p");
@@ -413,7 +426,6 @@ document.addEventListener("readystatechange", () => {
       vswr_p.style.lineHeight=".1rem";
       result_vswr.appendChild(vswr_p);
       // result_vswr.textContent+= `vswr=${all[0].vswr}\n`;
-      targets0.push(targetArr[0]);
       targetArr[0].z01.forEach((num,n)=> {
         let text_p= `Z01[${n+1}]= ${num.toFixed(1)} L01[${n+1}]= ${targetArr[0].l01[n].toFixed(1)} `;
         text_p+= ` ZO2[${n+1}]= ${targetArr[0].z02[n].toFixed(1)} L02[${n+1}]= ${targetArr[0].l02[n].toFixed(1)}`;
